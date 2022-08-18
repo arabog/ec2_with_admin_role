@@ -61,6 +61,7 @@ On the next window, select and apply the newly created role, admin_role, to your
 ![vpc11](vpc11.png?raw=true "vpc11")
 
 After connecting to your instance, verify the existing installation of AWS CLI, and run any AWS command, such as aws iam list-users.  
+
 ![vpc12](vpc12.png?raw=true "vpc12")
 
 This is a convenient way to have a properly configured - and secure - server that you can use to test and not have to worry about credentials.  
