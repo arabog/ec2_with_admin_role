@@ -1,0 +1,8 @@
+Parameters:
+  EnvironmentName:
+    Description: A Vpc for an EC2
+    Type: String
+
+  AMItoUse:
+    Description: AMI to use for the base image
+    Type: String
