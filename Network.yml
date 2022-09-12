@@ -84,4 +84,4 @@ Outputs:
     Description: A reference to the created Public Subnet
     Value: !Ref PublicSubnet
     Export:
-      Name: !Sub ${EnvironmentName}-PublicSubnet
+      Name: !Sub ${EnvironmentName}-PubSubnetID

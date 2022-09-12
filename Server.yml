@@ -1,8 +1,86 @@
+Description: A public instance
+
 Parameters:
   EnvironmentName:
     Description: A Vpc for an EC2
     Type: String
 
-  AMItoUse:
+  AMIImage:
     Description: AMI to use for the base image
     Type: String
+
+Resources:
+  AdminRole: 
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  
+  # # Use an instance profile to pass an IAM role to an EC2 instance. 
+  ProfileRoles:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Roles:
+        - !Ref AdminRole
+
+  # Amazon Ubuntu EC2 setion
+  SecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to our host
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      Tags: 
+        - Key: Name 
+          Value: !Sub "${EnvironmentName}-SecGrp"
+
+  Server:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: !Ref AMIImage
+      # KeyName: babs20002
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref SecGroup
+          SubnetId:
+            Fn::ImportValue: !Sub "${EnvironmentName}-PubSubnetID"
+
+      UserData:
+        Fn::Base64: !Sub |
+          # #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName} Instance

@@ -1,0 +1,11 @@
+[
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "Babs"
+    },
+
+    {
+        "ParameterKey": "AMIImage",
+        "ParameterValue": "ami-052efd3df9dad4825"
+    }
+]
